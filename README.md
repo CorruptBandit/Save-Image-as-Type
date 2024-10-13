@@ -52,4 +52,4 @@ This project is licensed under the GNU General Public License. See the [LICENSE]
 
 ## Acknowledgments
 
-Thanks to [Cuixiping](https://github.com/Cuixiping) for the original work on the Save-Image-as-Type extension, which inspired this project.
+Thanks to **Cuixiping** for the original work on the Save-Image-as-Type extension, which inspired this project.
