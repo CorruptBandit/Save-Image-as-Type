@@ -19,12 +19,12 @@ This project is a stripped-down fork of the original [Save-Image-as-Type](https:
 
 ### Permissions Management
 
-**NOT CURRENTLY SUPPORTED, ONCE FIXED IT WILL ALLOW THE FOLLOWING**:
-
 When you install this extension, Chromium will prompt you with the option **"Allow this extension to read and change all your data on websites that you visit."** You can set this permission to be:
 
 - **On click**: The extension will only have access to the current tab when you actively use it.
 - **On specific sites**: If you prefer, you can allow the extension access only to certain websites.
+
+However, please note that setting these permissions means that it will only work correctly if you are on the same site where the image is located. If you attempt to use the extension on a different site (cross-site), the functionality may break, as the extension will not have the necessary permissions to access the content.
 
 You can manage these permissions in your Chromium browser's settings, finding this extension, and clicking on the "Details" button. From there, you can adjust the site access settings according to your preferences.
 
