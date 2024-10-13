@@ -19,7 +19,9 @@ This project is a stripped-down fork of the original [Save-Image-as-Type](https:
 
 ### Permissions Management
 
-When you install this extension, Chrome will prompt you with the option **"Allow this extension to read and change all your data on websites that you visit."** You can set this permission to be:
+**NOT CURRENTLY SUPPORTED, ONCE FIXED IT WILL ALLOW THE FOLLOWING**:
+
+When you install this extension, Chromium will prompt you with the option **"Allow this extension to read and change all your data on websites that you visit."** You can set this permission to be:
 
 - **On click**: The extension will only have access to the current tab when you actively use it.
 - **On specific sites**: If you prefer, you can allow the extension access only to certain websites.
