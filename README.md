@@ -4,7 +4,7 @@ This is a Chromium extension that adds options to save images as PNG, JPG, or We
 
 ## Overview
 
-This project is a stripped-down fork of the original [Save-Image-as-Type](https://github.com/image4tools/Save-Image-as-Type) extension by [Cuixiping]. The primary goal of this fork is to enhance privacy and user security by minimizing the permissions required and streamlining the functionality.
+This project is a stripped-down fork of the original **Save-Image-as-Type** extension. The primary goal of this fork is to enhance privacy and user security by minimizing the permissions required and streamlining the functionality.
 
 ### Key Features
 
