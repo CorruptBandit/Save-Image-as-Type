@@ -67,6 +67,7 @@ function notify(msg) {
   if (msg.error) {
     msg = msg.error + '\n' + (msg.srcUrl || msg.src);
   }
+  console.log(msg)
 }
 
 function loadMessages() {
@@ -86,6 +87,7 @@ function connectTab(tab, frameId) {
   return port;
 }
 
+// On extension installation
 chrome.runtime.onInstalled.addListener(function() {
   loadMessages();
   ['JPG', 'PNG'].forEach(function(type) {
@@ -103,6 +105,7 @@ chrome.runtime.onInstalled.addListener(function() {
   });
 });
 
+// Handle messages from other parts of the extension
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   let { target, op } = message || {};
   if (target == 'background' && op) {
@@ -112,7 +115,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (op == 'notify') {
       let msg = message.message;
       if (msg && msg.error) {
-        let msg2 = msg.error;
+        let msg2 = chrome.i18n.getMessage(msg.error) || msg.error;
         if (msg.src) {
           msg2 += '\n' + msg.src;
         }
@@ -126,46 +129,68 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Context menu click event handler
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   let { menuItemId, mediaType, srcUrl, frameId } = info;
-  
-  if (menuItemId.startsWith('save_as_') && mediaType === 'image' && srcUrl) {
+
+  // Check if the URL is valid and contains an image URL
+  if (menuItemId.startsWith('save_as_') && mediaType === 'image') {
     loadMessages();
 
-    // Dynamically request permission to access the image's URL
-    chrome.permissions.request({
-      origins: [new URL(srcUrl).origin + "/*"]
-    }, async (granted) => {
-      if (granted) {
-        // Proceed with saving the image if permission is granted
-        await chrome.scripting.executeScript({
-          target: { tabId: tab.id, frameIds: frameId ? [frameId] : undefined },
-          files: ["converter.js"],
-        });
+    let imageUrl = srcUrl;
+    let type = menuItemId.replace('save_as_', '');
+    let filename = getSuggestedFilename(imageUrl, type);
 
-        fetchAsDataURL(srcUrl, async function(error, dataurl) {
-          if (error) {
-            notify({ error, srcUrl });
-            return;
-          }
+    // Establish connection with the content script
+    let sendMessageToContentScript = async (src, op) => {
+      let port = connectTab(tab, frameId);
+      await port.postMessage({
+        op: op,
+        target: 'content',
+        src: src,
+        type,
+        filename
+      });
+    };
 
-          let type = menuItemId.replace('save_as_', '');
-          let filename = getSuggestedFilename(srcUrl, type);
-          let noChange = srcUrl.startsWith('data:image/' + (type === 'jpg' ? 'jpeg' : type) + ';');
+    // Handle data URLs directly
+    if (imageUrl.includes("data:image")) {
+      await sendMessageToContentScript(imageUrl, 'download');
+    } else {
+      // Extract the origin from the imageUrl
+      let imageOrigin = new URL(imageUrl).origin;
+      let currentTabOrigin = new URL(tab.url).origin;
 
-          let port = connectTab(tab, frameId);
-          await port.postMessage({
-            op: noChange ? 'download' : 'convertType',
-            target: 'content',
-            src: dataurl,
-            type,
-            filename
+      // Create an array of origins to request permissions
+      let originsToRequest = [...new Set([imageOrigin, currentTabOrigin])];
+
+      // Dynamically request permission to access both origins
+      chrome.permissions.request({
+        origins: originsToRequest.map(origin => `${origin}/*`) // Request permission for both origins
+      }, async (granted) => {
+        if (granted) {
+          // Proceed with saving the image if permission is granted
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id, frameIds: frameId ? [frameId] : undefined },
+            files: ["converter.js"],
           });
-        });
-      } else {
-        notify("Permission was denied to access this image");
-      }
-    });
+
+          // Fetch the image as a data URL
+          fetchAsDataURL(imageUrl, async function (error, dataurl) {
+            if (error) {
+              notify({ error, srcUrl });
+              return;
+            }
+
+            // If the image type matches, directly download it; otherwise, convert it
+            let noChange = dataurl.startsWith('data:image/' + (type === 'jpg' ? 'jpeg' : type) + ';');
+            await sendMessageToContentScript(dataurl, noChange ? 'download' : 'convertType');
+          });
+        } else {
+          notify("Permission was denied to access the required origins");
+        }
+      });
+    }
   } else {
     notify("It's not an image");
   }
