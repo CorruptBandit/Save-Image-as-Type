@@ -1,27 +1,11 @@
 let messages;
 
-// some old chrome doesn't support chrome.i18n.getMessage in service worker.
-if (!chrome.i18n?.getMessage) {
-	if (!chrome.i18n) {
-		chrome.i18n = {};
-	}
-	chrome.i18n.getMessage = (key, args) => {
-		if (key == 'View_in_store') {
-			return 'View in store';
-		}
-		if (key == 'Save_as' && args?.[0]) {
-			return 'Save as ' + args[0];
-		}
-		return key;
-	};
-}
-
 function download(url, filename) {
 	chrome.downloads.download(
 		{ url, filename, saveAs: true },
 		function(downloadId) {
 			if (!downloadId) {
-				let msg = chrome.i18n.getMessage('errorOnSaving');
+				let msg = "An error occurred while saving the image";
 				if (chrome.runtime.lastError) {
 					msg += ': \n'+ chrome.runtime.lastError.message;
 				}
@@ -82,37 +66,25 @@ function getSuggestedFilename(src, type) {
 
 function notify(msg) {
 	if (msg.error) {
-		msg = (chrome.i18n.getMessage(msg.error) || msg.error) + '\n'+ (msg.srcUrl || msg.src);
+		msg = msg.error + '\n'+ (msg.srcUrl || msg.src);
 	}
 }
 
 function loadMessages() {
 	if (!messages) {
 		messages = {};
-		['errorOnSaving', 'errorOnLoading'].forEach(key => {
-			messages[key] = chrome.i18n.getMessage(key);
-		});
+		messages['errorOnSaving'] = "An error occurred while saving the image"
+		messages['errorOnLoading'] = "An error occurred while loading the image"
 	}
 	return messages;
 }
 
-async function hasOffscreenDocument(path) {
-	const offscreenUrl = chrome.runtime.getURL(path);
-	const matchedClients = await clients.matchAll();
-	for (const client of matchedClients) {
-		if (client.url === offscreenUrl) {
-			return true;
-		}
-	}
-	return false;
-}
-
 chrome.runtime.onInstalled.addListener(function () {
 	loadMessages();
-	['JPG','PNG','WebP'].forEach(function (type){
+	['JPG','PNG'].forEach(function (type){
 		chrome.contextMenus.create({
 			"id" : "save_as_" + type.toLowerCase(),
-			"title" : chrome.i18n.getMessage("Save_as", [type]),
+			"title" : "Save as " + type,
 			"type" : "normal",
 			"contexts" : ["image"],
 		});
@@ -121,12 +93,6 @@ chrome.runtime.onInstalled.addListener(function () {
 		"id" : "sep_1",
 		"type" : "separator",
 		"contexts" : ["image"]
-	});
-	chrome.contextMenus.create({
-		"id" : "view_in_store",
-		"title" : chrome.i18n.getMessage("View_in_store"),
-		"type" : "normal",
-		"contexts" : ["image"],
 	});
 });
 
@@ -156,7 +122,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 	let {menuItemId, mediaType, srcUrl} = info;
 	let connectTab = () => {
-		// for old chrome v108-
 		let port = chrome.tabs.connect(
 			tab.id,
 			{
@@ -168,54 +133,29 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 	};
 	if (menuItemId.startsWith('save_as_')) {
 		if (mediaType=='image' && srcUrl) {
-			let type = menuItemId.replace('save_as_', '');
-			let filename = getSuggestedFilename(srcUrl, type);
-			loadMessages();
-			let noChange = srcUrl.startsWith('data:image/' + (type == 'jpg' ? 'jpeg' : type) + ';');
-			if (!chrome.offscreen) {
-				// for old chrome v108-
-				let frameIds = info.frameId ? [] : void 0;
-				await chrome.scripting.executeScript({
-					target: { tabId: tab.id, frameIds },
-					files: ["offscreen.js"], // content script and offscreen use the same file.
-				});
+			loadMessages();;
+
+			let frameIds = info.frameId ? [] : void 0;
+			await chrome.scripting.executeScript({
+				target: { tabId: tab.id, frameIds },
+				files: ["converter.js"], // content script and offscreen use the same file.
+			});
 			}
 			fetchAsDataURL(srcUrl, async function(error, dataurl) {
 				if (error) {
 					notify({error, srcUrl});
 					return;
 				}
-				// offscreen api need chrome v109+
-				if (!chrome.offscreen) {
-					// for old chrome v108-
-					let port = connectTab();
-					await port.postMessage({ op: noChange ? 'download' : 'convertType', target: 'content', src: dataurl, type, filename });
-					return;
-				}
-				// for new chrome v109+
-				if (noChange) {
-					download(dataurl, filename);
-					return;
-				}
-				const offscreenSrc = 'offscreen.html'
-				if (!(await hasOffscreenDocument(offscreenSrc))) {
-					await chrome.offscreen.createDocument({
-						url: chrome.runtime.getURL(offscreenSrc),
-						reasons: ['DOM_SCRAPING'],
-						justification: 'Download a image for user',
-					});
-				}
-				await chrome.runtime.sendMessage({ op: 'convertType', target: 'offscreen', src: dataurl, type, filename });
+				let type = menuItemId.replace('save_as_', '');
+				let filename = getSuggestedFilename(srcUrl, type);
+				let noChange = srcUrl.startsWith('data:image/' + (type == 'jpg' ? 'jpeg' : type) + ';');
+				let port = connectTab();
+				await port.postMessage({ op: noChange ? 'download' : 'convertType', target: 'content', src: dataurl, type, filename });
+				return;
 			});
 			return;
 		} else {
-			notify(chrome.i18n.getMessage("errorIsNotImage"));
-		}
-		return;
-	}
-	if (menuItemId == 'view_in_store') {
-		let url = "https://chrome.google.com/webstore/detail/save-image-as-type/" + chrome.i18n.getMessage("@@extension_id");
-		chrome.tabs.create({ url: url, index: tab.index + 1 });
-		return;
-	}
-});
+			notify("It's not an image");
+
+};
+})

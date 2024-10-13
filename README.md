@@ -1,36 +1,53 @@
 # Save-Image-as-Type
 
-# English Version
+This is a Chromium extension that adds options to save images as PNG, JPG, or WebP directly from the context menu.
 
-## Add for pictures Chrome extension for "Save as PNG/JPG/WebP" right-click menu.
+## Overview
 
-Save Image as Type is an chrome extension which add Save Image as PNG / JPG / WebP option to the context menu of image.
+This project is a stripped-down fork of the original [Save-Image-as-Type](https://github.com/image4tools/Save-Image-as-Type) extension by [Cuixiping]. The primary goal of this fork is to enhance privacy and user security by minimizing the permissions required and streamlining the functionality.
 
-Screenshot of English version  
-![Save-Image-as-Type Screenshot of the English interface](https://raw.githubusercontent.com/cuixiping/Save-Image-as-Type/master/screenshot-en.jpg)
+### Key Features
 
-Because I need to save the webp image on the chrome web store as jpg format, I first found a special conversion software, but it was more troublesome to use, and then found a Save Image As Type 1.0.5 extension in the web store, but this extension has not been maintained for a long time, and it is currently **inoperable**, so I made some improvements on this basis.
+- Adds "Save Image as PNG," "Save Image as JPG," and "Save Image as WebP" options to the context menu for images.
+- Supports direct saving of images with minimal user interaction.
 
-[Install Save Image as Type from the Chrome Web Store](https://chrome.google.com/webstore/detail/gabfmnliflodkdafenbcpjdlppllnemd)
+### Changes Made
 
-Reference works 1: ~~Save Image As Type 1.0.5~~ (Removed from web store)
+- **Minimal Permissions**: This fork opts to use only the `"scripting"` and `"contextMenus"` permissions. This means that the extension only has access to the current tab when the user interacts with it, ensuring a more secure experience.
 
-Reference works 2: [Save Image As PNG 1.0.2](https://chrome.google.com/webstore/detail/nkokmeaibnajheohncaamjggkanfbphi)
-(Can only be saved as PNG，Cannot be saved as JPG and WebP)
+- **Removal of Offscreen Functionality**: The offscreen document functionality has been removed due to piracy concerns. The previous implementation, which allowed for processing images in an offscreen context, could potentially expose users to unwanted risks. By eliminating this feature, the extension focuses solely on the core functionality of saving images with increased security.
 
-# 中文版
+### Permissions Management
 
-## 为图片添加“另存为PNG/JPG/WebP”右键菜单的Chrome扩展。
+When you install this extension, Chrome will prompt you with the option **"Allow this extension to read and change all your data on websites that you visit."** You can set this permission to be:
 
-中文版截图  
-![Save-Image-as-Type 中文界面截图](https://raw.githubusercontent.com/cuixiping/Save-Image-as-Type/master/screenshot-zh.jpg)
+- **On click**: The extension will only have access to the current tab when you actively use it.
+- **On specific sites**: If you prefer, you can allow the extension access only to certain websites.
 
-由于自己需要将chrome web store上的webp图片另存为jpg格式，先是找了专门的转换软件，但是使用比较麻烦，后来在web store里找到了一个Save Image As Type 1.0.5的扩展，但是这个扩展已经许久不维护，并且当前已经**无法运行**，于是自己在此基础上进行了一些改进。
+You can manage these permissions in your Chromium browser's settings, finding this extension, and clicking on the "Details" button. From there, you can adjust the site access settings according to your preferences.
 
-[从 Chrome Web Store 安装 Save Image as Type](https://chrome.google.com/webstore/detail/gabfmnliflodkdafenbcpjdlppllnemd)
+## Minimum Chrome Version
 
+This extension has been tested on **Chromium version 129.0.6668.70**. While this is the minimum version specified, lower versions of Chromium may still work. However, functionality cannot be guaranteed on versions below this threshold.
 
-参考作品1: ~~Save Image As Type 1.0.5~~ (已下架)
+## Installation
 
-参考作品2: [Save Image As PNG 1.0.2](https://chrome.google.com/webstore/detail/nkokmeaibnajheohncaamjggkanfbphi)
-(只能保存为PNG，不能保存为JPG和WebP)
+1. **Download the ZIP file**: Go to the [Releases page](https://github.com/CorruptBandit/Save-Image-as-Type/releases) to download the latest release ZIP file or clone/download the repository as a ZIP.
+2. **Enable Developer Mode**: Open Chrome and navigate to `chrome://extensions/`.
+3. **Load the Extension**: 
+   - **Method 1**: Drag and drop the downloaded ZIP file directly into the `chrome://extensions/` page.
+   - **Method 2**: Click "Load unpacked" and select the directory where you extracted the ZIP file or where you cloned the repository.
+
+## Usage
+
+1. Right-click on any image on a webpage.
+2. Select "Save Image as PNG" or "Save Image as JPG" from the context menu.
+3. Choose the desired location and save the image.
+
+## License
+
+This project is licensed under the GNU General Public License. See the [LICENSE](./LICENSE) file for details.
+
+## Acknowledgments
+
+Thanks to [Cuixiping](https://github.com/Cuixiping) for the original work on the Save-Image-as-Type extension, which inspired this project.

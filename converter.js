@@ -1,4 +1,3 @@
-// must use `var` instead of `let` to avoid of duplicated declared error when execute content script again
 var workAsContent, contentPort, listened, handleMessages;
 
 if (!listened) {
@@ -44,10 +43,6 @@ function init() {
 		}
 	};
 
-	// work as offscreen
-	chrome.runtime.onMessage.addListener(handleMessages);
-	
-	// work as content script for old chrome (v108-)
 	chrome.runtime.onConnect.addListener(port => {
 		if (port.name == 'convertType') {
 			workAsContent = true;

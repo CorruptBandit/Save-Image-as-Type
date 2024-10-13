@@ -1,20 +1,24 @@
 {
-   "name": "__MSG_extName__",
-   "short_name": "__MSG_extShortName__",
-   "description": "__MSG_extDescription__",
+   "name": "Save image as Type",
+   "short_name": "SaveImageAs",
+   "description": "Save image as PNG or JPG by context menu on image.",
    "icons": {
-      "128": "icon-128.png",
-      "16": "icon-16.png",
-      "48": "icon-48.png"
+      "128": "icons/icon-128.png",
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png"
    },
    "background": {
       "service_worker": "background.js"
    },
-   "default_locale": "en",
    "manifest_version": 3,
-   "minimum_chrome_version": "88.0.0.0",
-   "permissions": [ "downloads", "contextMenus", "offscreen", "activeTab", "scripting" ],
-   "optional_permissions": [ ],
-   "host_permissions": [ "<all_urls>" ],
-   "version": "1.2.3"
+   "minimum_chrome_version": "129.0.6668.70",
+   "permissions": [
+      "contextMenus", "scripting"
+   ],
+   "optional_permissions": [],
+   "host_permissions": [
+      "http://*/*", 
+      "https://*/*" 
+   ],
+   "version": "1.2.4"
 }
