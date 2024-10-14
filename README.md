@@ -23,9 +23,7 @@ This project is a stripped-down fork of the original **Save-Image-as-Type** exte
 
 When you install this extension, it will request permissions on a per-click basis. This means that the extension will only have access to the current site when you actively use it. 
 
-If you wish to avoid the per-click permission request, you can allow access for all sites in the extension settings. This will enable the extension to work seamlessly across different websites. 
-
-You can manage these permissions in your Chromium browser's settings by finding this extension and clicking on the "Details" button. From there, you can adjust the site access settings according to your preferences.
+If you wish to avoid the per-click permission request, you should consider using the original extension, as this is privacy focused.
 
 ## Minimum Chromium Version
 
