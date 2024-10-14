@@ -13,7 +13,7 @@ This project is a stripped-down fork of the original **Save-Image-as-Type** exte
 
 ### Changes Made
 
-- **Optional Host Permissions**: The extension uses optional host permissions, allowing users to grant access only when needed. By default, the extension will request permissions on a per-click basis, meaning it will have access only to the site you're currently visiting. However, you can choose to allow access to all sites in the extension settings.
+- **Optional Host Permissions**: The extension uses optional host permissions, allowing users to grant access only when needed. By default, the extension will request permissions on a per-click basis, meaning it will have access the sites required for downloading the image. Note if the image is cross-site it will need permissions for each site in the chain.
 
 - **Minimal Permissions**: This fork opts to use only the `"scripting"` and `"contextMenus"` permissions. This means that the extension only has access to the current tab when the user interacts with it, ensuring a more secure experience.
 
