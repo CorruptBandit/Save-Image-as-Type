@@ -110,7 +110,7 @@ function extractAndDecodeImageUrl(linkUrl) {
 // On extension installation
 chrome.runtime.onInstalled.addListener(function () {
   loadMessages();
-  ["JPG", "PNG"].forEach(function (type) {
+  ["PNG", "JPG"].forEach(function (type) {
     chrome.contextMenus.create({
       id: "save_as_" + type.toLowerCase(),
       title: "Save as " + type,
@@ -194,8 +194,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     // Create an array of origins to request permissions
     originsToRequest = [...new Set([imageOrigin, currentTabOrigin])];
-
-    console.log(imageUrl);
 
     // Dynamically request permission to access both origins
     chrome.permissions.request(
