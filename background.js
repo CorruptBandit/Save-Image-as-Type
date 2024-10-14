@@ -226,7 +226,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
               dataurl,
               noChange ? "download" : "convertType"
             );
+            chrome.permissions.remove(
+              {
+                origins: originsToRequest.map((origin) => `${origin}/*`), // Remove permission for both origins
+              },
+              (removed) => {
+                if (removed) {
+                  console.log("Permissions removed after download");
+                } else {
+                  console.log("Failed to remove permissions");
+                }
+              }
+            );
           });
+          
         } else {
           notify("Permission was denied to access the required origins");
         }
